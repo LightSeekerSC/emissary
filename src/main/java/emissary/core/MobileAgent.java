@@ -909,6 +909,18 @@ public abstract class MobileAgent implements Serializable, IMobileAgent, MobileA
     }
 
     /**
+     * Add the time to the history
+     *
+     * @param time the time in milliseconds that the place took to process
+     * @param payloadArg the dataobject that is being processed
+     */
+    protected void insertHistoryTime(final long time, final IBaseDataObject payloadArg) {
+        payloadArg.insertTransformHistoryTime(time);
+
+        logger.debug("Updated history with place compute time");
+    }
+
+    /**
      * Setter for processFirstPlace
      *
      * @param arg the new value for processFirstPlace

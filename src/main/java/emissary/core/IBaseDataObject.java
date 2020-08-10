@@ -677,6 +677,15 @@ public interface IBaseDataObject {
     void appendTransformHistory(String key);
 
     /**
+     * Updates the last entry in the transform history to reflect the processing time of the place. This is called by
+     * MobileAgent after finishing a place
+     *
+     * @see emissary.core.MobileAgent#agentControl
+     * @param time the processing time in milliseconds for the place
+     */
+    void insertTransformHistoryTime(long time);
+
+    /**
      * Return what machine we are located on
      * 
      * @return string local host name

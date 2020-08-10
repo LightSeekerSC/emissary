@@ -546,6 +546,19 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     /**
+     * This function appends a processing time (in seconds) to the most recent place history
+     *
+     * @param time Duration in milliseconds the most recent place took to process
+     */
+    public void insertTransformHistoryTime(final long time) {
+        double dTime = time;
+        int lastEntryIndex = this.history.size() - 1;
+        String lastHistory = this.history.get(lastEntryIndex);
+        // Append the runtime to the itinerary
+        this.history.set(lastEntryIndex, lastHistory + " (" + String.format("%.3f", dTime / 1000) + " s)");
+    }
+
+    /**
      * Replace history with the new history. Is this historic revisionism? Maybe, but it is needed to support sprouting
      *
      * @param newHistory list of new history strings to use

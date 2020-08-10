@@ -173,6 +173,9 @@ public class HDMobileAgent extends MobileAgent {
      */
     @Override
     protected void agentControl(final IServiceProviderPlace currentPlaceArg) {
+        // Set to track how long it takes a place to process in milliseconds. Set to invalid value -1 for validity check
+        long processingTime = -1;
+
         DirectoryEntry newEntry = currentPlaceArg.getDirectoryEntry();
         logger.debug("In agentControlHD " + currentPlaceArg + " for " + agentID);
 
@@ -254,7 +257,9 @@ public class HDMobileAgent extends MobileAgent {
                         }
                         nextKeyRecorded = true;
                     }
+                    long timeStart = System.currentTimeMillis();
                     final List<IBaseDataObject> sprouts = atPlaceHD(currentPlace, toBeProcessed);
+                    processingTime = System.currentTimeMillis() - timeStart;
 
                     // Add any sprouts collected from the payloads
                     if (sprouts.size() > 0) {
@@ -267,6 +272,11 @@ public class HDMobileAgent extends MobileAgent {
             controlError = false;
             newEntry = getNextKey(currentPlace, mypayload);
             nextKeyRecorded = false;
+
+            // Append time spent processing to the history (must be after getNextKey, which uses history to check the last place)
+            if (processingTime != -1) {
+                insertHistoryTime(processingTime, mypayload);
+            }
 
             // Defer IO phase for now if there are attachments to process
             // and we aren't already in the io phase
@@ -499,6 +509,16 @@ public class HDMobileAgent extends MobileAgent {
         logger.debug("In recordHistory with " + payloadListArg.size() + " payloads");
         for (final IBaseDataObject d : payloadListArg) {
             recordHistory(placeEntry, d);
+        }
+    }
+
+    /**
+     * Update last history with time
+     */
+    protected void insertHistoryTime(final long time, final List<IBaseDataObject> payloadListArg) {
+        logger.debug("In insertHistoryTime with " + payloadListArg.size() + " payloads");
+        for (final IBaseDataObject d : payloadListArg) {
+            insertHistoryTime(time, d);
         }
     }
 
